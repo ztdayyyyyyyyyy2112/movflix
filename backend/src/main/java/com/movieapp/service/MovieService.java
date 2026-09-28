@@ -49,7 +49,7 @@ public class MovieService {
 
         try {
             Map<Long, String> genreNames = fetchGenreNames();
-            JsonNode response = restTemplate.getForObject(buildMovieUrl(search, page), JsonNode.class);
+            JsonNode response = restTemplate.getForObject(buildMovieUrl(search, genre, page, genreNames), JsonNode.class);
             if (response == null || !response.path("results").isArray()) {
                 return new MovieCatalogResponse(List.of(), page, 0, 0, "TMDB chưa trả về dữ liệu phim.");
             }
@@ -61,18 +61,16 @@ public class MovieService {
                     String name = genreNames.get(id.asLong());
                     if (name != null) movieGenres.add(name);
                 });
-                if (genre == null || genre.isBlank() || movieGenres.stream().anyMatch(name -> name.equalsIgnoreCase(genre))) {
-                    long id = result.path("id").asLong();
-                    movies.add(new Movie(
-                            id,
-                            result.path("title").asText("Untitled"),
-                            imageUrl(result.path("poster_path").asText(null), "w500"),
-                            imageUrl(result.path("backdrop_path").asText(null), "w1280"),
-                            result.path("overview").asText(""),
-                            movieGenres,
-                            licensedStreamUrl(id)
-                    ));
-                }
+                long id = result.path("id").asLong();
+                movies.add(new Movie(
+                    id,
+                    result.path("title").asText("Untitled"),
+                    imageUrl(result.path("poster_path").asText(null), "w500"),
+                    imageUrl(result.path("backdrop_path").asText(null), "w1280"),
+                    result.path("overview").asText(""),
+                    movieGenres,
+                    licensedStreamUrl(id)
+                ));
             });
                 return new MovieCatalogResponse(
                     movies,
@@ -98,15 +96,25 @@ public class MovieService {
         }
     }
 
-    private String buildMovieUrl(String search, int page) {
-        String path = search == null || search.isBlank() ? "/discover/movie" : "/search/movie";
+    private String buildMovieUrl(String search, String genre, int page, Map<Long, String> genreNames) {
+        boolean hasSearch = search != null && !search.isBlank();
+        String path = hasSearch ? "/search/movie" : "/discover/movie";
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(TMDB_API + path)
                 .queryParam("api_key", apiKey)
                 .queryParam("language", "vi-VN")
                 .queryParam("include_adult", false)
                 .queryParam("page", page);
-        if (path.equals("/discover/movie")) builder.queryParam("sort_by", "popularity.desc");
-        else builder.queryParam("query", search);
+        if (hasSearch) {
+            builder.queryParam("query", search);
+        } else {
+            builder.queryParam("sort_by", "popularity.desc");
+            if (genre != null && !genre.isBlank()) {
+                genreNames.entrySet().stream()
+                        .filter(entry -> entry.getValue().equalsIgnoreCase(genre))
+                        .findFirst()
+                        .ifPresent(entry -> builder.queryParam("with_genres", entry.getKey()));
+            }
+        }
         return builder.build().encode().toUriString();
     }
 
