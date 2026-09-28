@@ -1,0 +1,33 @@
+.footer {
+  background-color: #141414;
+  padding: 70px 40px 30px;
+  color: #808080;
+  border-top: 1px solid #333;
+  margin-top: 40px;
+}
+.footer-content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.footer-logo {
+  height: 50px;
+  margin-bottom: 30px;
+  display: block;
+}
+.footer-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 30px;
+  font-size: 14px;
+}
+.footer-links span {
+  cursor: pointer;
+}
+.footer-links span:hover {
+  text-decoration: underline;
+}
+.footer-copyright {
+  font-size: 12px;
+  margin-top: 20px;
+}

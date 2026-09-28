@@ -1,0 +1,45 @@
+.navbar { position: fixed; inset: 0 0 auto; width: 100%; min-height: 76px; padding: 0 4.2%; display: flex; justify-content: space-between; align-items: center; gap: 24px; z-index: 1000; background: linear-gradient(180deg, rgba(0,0,0,.88), transparent); transition: background-color .35s ease, box-shadow .35s ease; }
+.navbar.scrolled { background-color: #141414; background-image: none; box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+.nav-left, .nav-links, .nav-right, .brand-lockup { display: flex; align-items: center; }
+.nav-left { gap: 38px; min-width: 0; }
+.brand-lockup { flex: none; gap: 8px; color: #e50914; font-size: 21px; font-weight: 900; letter-spacing: .04em; text-decoration: none; }
+.brand-mark { width: 25px; height: 30px; }
+.nav-links { gap: 22px; white-space: nowrap; }
+.nav-links a, .nav-links button { color: #d5d5d5; background: none; border: 0; font: inherit; font-size: 13px; text-decoration: none; cursor: pointer; transition: color .2s ease; }
+.nav-links a:hover, .nav-links button:hover, .nav-links .active { color: #fff; }
+.navbar.search-active .nav-links a:nth-of-type(4), .navbar.search-active .nav-links button { display: none; }
+.nav-right { position: relative; gap: 18px; }
+.search-form { position: relative; width: 36px; height: 36px; display: flex; flex: 0 0 auto; justify-content: flex-end; transition: width .3s ease; }
+.search-form.is-open { width: 230px; }
+.search-input { width: 100%; min-width: 0; opacity: 0; border: 0; border-bottom: 1px solid #aaa; outline: 0; background: rgba(0,0,0,.65); padding: 8px 36px 8px 10px; color: #fff; font-size: 14px; transition: opacity .2s ease; }
+.search-form.is-open .search-input, .search-input:focus { opacity: 1; }
+.search-btn { position: absolute; inset: 0 0 0 auto; width: 36px; display: grid; place-items: center; border: 0; color: #fff; background: transparent; cursor: pointer; }
+.suggestions-dropdown, .notification-menu, .profile-menu { position: absolute; top: calc(100% + 12px); right: 0; z-index: 1100; width: 280px; color: #e5e5e5; background: rgba(20,20,20,.98); border: 1px solid #454545; box-shadow: 0 16px 34px rgba(0,0,0,.5); }
+.suggestions-dropdown { top: 44px; right: auto; left: 0; width: 100%; }
+.suggestions-title { padding: 10px 12px; border-bottom: 1px solid #393939; color: #aaa; font-size: 12px; }
+.suggestion-item { padding: 10px 12px; cursor: pointer; font-size: 13px; }
+.suggestion-item:hover { background: #333; color: #fff; }
+.genre-filter, .lang-btn, .clear-btn { border: 0; color: #eee; background: transparent; cursor: pointer; font-size: 13px; }
+.genre-filter { max-width: 120px; }
+.genre-filter option { background: #141414; }
+.clear-btn { color: #e50914; }
+.lang-btn { font-weight: 700; }
+.login-btn-nav { padding: 8px 15px; border: 0; border-radius: 3px; color: #fff; background: #e50914; font-weight: 700; cursor: pointer; }
+.login-btn-nav:hover { background: #f40612; }
+.icon-button { position: relative; width: 32px; height: 36px; display: grid; place-items: center; border: 0; color: #fff; background: none; cursor: pointer; }
+.icon-button svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.notification-badge { position: absolute; top: 0; right: -3px; width: 16px; height: 16px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: #e50914; font-size: 10px; font-weight: 700; }
+.notification-menu { padding: 16px; }
+.notification-menu strong { display: block; margin-bottom: 10px; color: #fff; font-size: 14px; }
+.notification-menu p { padding: 10px 0; border-top: 1px solid #333; font-size: 12px; line-height: 1.45; }
+.profile-wrap { position: relative; }
+.profile-trigger { display: flex; align-items: center; gap: 8px; border: 0; background: none; cursor: pointer; }
+.avatar-img { width: 32px; height: 32px; border-radius: 4px; object-fit: cover; }
+.profile-caret { color: #fff; font-size: 17px; }
+.profile-menu { display: none; padding: 8px 0; }
+.profile-wrap:hover .profile-menu, .profile-wrap:focus-within .profile-menu { display: block; }
+.profile-name { display: block; padding: 9px 14px; color: #aaa; font-size: 12px; }
+.profile-menu button { width: 100%; padding: 10px 14px; border: 0; color: #eee; background: none; text-align: left; font: inherit; font-size: 13px; cursor: pointer; }
+.profile-menu button:hover { color: #fff; background: #303030; }
+@media (max-width: 900px) { .navbar { min-height: 68px; gap: 14px; } .nav-left { gap: 20px; } .nav-links { gap: 14px; } .nav-links a, .nav-links button { font-size: 12px; } .nav-links a:nth-of-type(2), .genre-filter { display: none; } .nav-right { gap: 12px; } }
+@media (max-width: 620px) { .navbar { min-height: 62px; padding: 0 4%; } .brand-lockup { font-size: 0; } .brand-mark { width: 23px; } .nav-left { gap: 12px; } .nav-links { gap: 10px; } .nav-links a:not(.active), .nav-links button { display: none; } .nav-right { gap: 8px; } .search-form.is-open { width: min(42vw, 180px); } .lang-btn { display: none; } .notification-menu { right: -50px; width: min(280px, 85vw); } }

@@ -1,0 +1,35 @@
+.movie-row { position: relative; z-index: 1; margin-bottom: 42px; padding: 0 4.2%; }
+.row-header { display: flex; align-items: baseline; gap: 14px; margin-bottom: 12px; }
+.row-header h2 { margin: 0; color: #e5e5e5; font-size: 19px; font-weight: 700; }
+.row-all-link { padding: 0; border: 0; color: #54b9c5; background: transparent; opacity: 0; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; transition: opacity .2s ease; }
+.row-header:hover .row-all-link, .row-all-link:focus-visible { opacity: 1; }
+.row-all-link span { margin-left: 2px; font-size: 17px; }
+.row-slider-wrap { position: relative; }
+.row-posters { display: flex; gap: 9px; overflow-x: auto; overflow-y: visible; padding: 4px 0 70px; scroll-behavior: smooth; scrollbar-width: none; }
+.row-posters::-webkit-scrollbar { display: none; }
+.poster-card { position: relative; flex: 0 0 calc((100% - 45px) / 6); aspect-ratio: 16 / 9; border-radius: 4px; cursor: pointer; transform-origin: var(--hover-origin, center center); transition: transform .24s ease, box-shadow .24s ease; }
+.poster-card:hover, .poster-card:focus-within { z-index: 10; transform: scale(1.28); transition-delay: .5s; box-shadow: 0 10px 30px rgba(0,0,0,.55); }
+.row-poster, .card-preview-video { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 4px; object-fit: cover; background: #282828; }
+.card-preview-video { opacity: 0; transition: opacity .2s ease .5s; }
+.poster-card:hover .card-preview-video { opacity: 1; }
+.poster-info { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; padding: 28px 9px 7px; background: linear-gradient(transparent 0%, rgba(0,0,0,.36) 44%, rgba(0,0,0,.96) 100%); pointer-events: none; }
+.poster-card:hover .poster-info, .poster-card:focus-within .poster-info { pointer-events: auto; }
+.card-actions { display: flex; align-items: center; gap: 6px; height: 0; margin: 0 0 0; overflow: hidden; opacity: 0; transition: height .2s ease, margin .2s ease, opacity .18s ease; }
+.poster-card:hover .card-actions, .poster-card:focus-within .card-actions { height: 24px; margin-bottom: 4px; opacity: 1; }
+.card-action { width: 24px; height: 24px; display: grid; place-items: center; border: 1px solid #777; border-radius: 50%; color: #fff; background: #2a2a2a; font-size: 12px; cursor: pointer; }
+.card-action:hover { border-color: #fff; background: #414141; }
+.card-play { border-color: #fff; color: #111; background: #fff; }
+.card-info { margin-left: auto; }
+.poster-title { display: -webkit-box; margin: 0 0 3px; overflow: hidden; color: #fff; font-size: 11px; font-weight: 700; line-height: 1.2; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.poster-meta { display: flex; gap: 9px; color: #aaa; font-size: 9px; line-height: 1.2; }
+.poster-meta span:last-child { padding: 0 3px; border: 1px solid #777; }
+.poster-description { display: none; margin: 3px 0 0; color: #ddd; font-size: 9px; line-height: 1.2; }
+.poster-card:hover .poster-description, .poster-card:focus-within .poster-description { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
+.slider-arrow { position: absolute; top: 0; bottom: 68px; z-index: 12; width: 42px; display: grid; place-items: center; border: 0; color: white; background: rgba(0,0,0,.58); font-size: 38px; opacity: 0; cursor: pointer; transition: opacity .18s ease, background .18s ease; }
+.row-slider-wrap:hover .slider-arrow, .slider-arrow:focus-visible { opacity: 1; }
+.slider-arrow:hover { background: rgba(0,0,0,.82); }
+.slider-arrow-left { left: -1px; }
+.slider-arrow-right { right: -1px; }
+@media (max-width: 1050px) { .poster-card { flex-basis: calc((100% - 30px) / 5); } }
+@media (max-width: 760px) { .movie-row { margin-bottom: 30px; padding: 0 5%; } .row-header h2 { font-size: 17px; } .poster-card { flex-basis: calc((100% - 18px) / 3); } .row-posters { gap: 9px; padding-bottom: 12px; } .slider-arrow { display: none; } .row-all-link { opacity: 1; } .poster-card:hover { transform: none; } .card-actions, .poster-description { display: none; } .card-preview-video { display: none; } }
+@media (max-width: 430px) { .poster-card { flex-basis: calc((100% - 9px) / 2); } }

@@ -1,0 +1,12 @@
+.search-results { padding: 20px 0; }
+.search-results > h2 { margin: 0; color: #fff; font-size: 25px; }
+.search-results > h2 span { color: #aaa; font-size: 15px; font-weight: 400; }
+.results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 24px 16px; margin-top: 22px; }
+.result-card { transition: transform 0.2s; cursor: pointer; }
+.result-card:hover { transform: scale(1.03); }
+.result-card img { width: 100%; border-radius: 8px; }
+.result-info { margin-top: 9px; }
+.result-info h4 { display: -webkit-box; overflow: hidden; font-size: 14px; line-height: 1.4; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.result-info p { font-size: 13px; color: var(--text-secondary); }
+.no-results { text-align: center; padding: 60px; font-size: 20px; }
+@media (max-width: 620px) { .results-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 10px; } }

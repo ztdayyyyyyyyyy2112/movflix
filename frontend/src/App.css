@@ -1,0 +1,14 @@
+.app { min-height: 100vh; overflow: hidden; color: #fff; background: #141414; }
+:root { --bg-primary: #141414; --bg-secondary: #1f1f1f; --text-primary: #fff; --text-secondary: #b3b3b3; --brand-red: #e50914; }
+.movie-rows-container { position: relative; z-index: 2; margin-top: -115px; padding: 0 0 42px; }
+.app-catalog .movie-rows-container { min-height: calc(100vh - 76px); margin-top: 96px; padding: 0 4.2% 42px; }
+.search-skeleton { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; padding: 26px 4.2%; }
+.skeleton-card { aspect-ratio: 16 / 9; border-radius: 4px; background: linear-gradient(100deg, #202020 20%, #303030 38%, #202020 56%); background-size: 200% 100%; animation: skeleton-shimmer 1.4s ease-in-out infinite; }
+.result-card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 4px; background: #242424; }
+.result-info h4 { color: #fff; }
+.result-info p { color: #aaa; }
+.empty-list { padding: 20px 4.2%; color: #aaa; }
+@keyframes skeleton-shimmer { to { background-position-x: -200%; } }
+@media (max-width: 1050px) { .search-skeleton { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .movie-rows-container { margin-top: -55px; } .search-skeleton { grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 20px 5%; } }
+@media (max-width: 430px) { .search-skeleton { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
