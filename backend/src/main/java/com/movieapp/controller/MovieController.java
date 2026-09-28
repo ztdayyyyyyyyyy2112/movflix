@@ -19,12 +19,14 @@ public class MovieController {
     @GetMapping
     public MovieCatalogResponse getMovies(@RequestParam(required = false) String genre,
                                           @RequestParam(required = false) String search,
-                                          @RequestParam(defaultValue = "1") int page) {
-        return movieService.getMovies(search, genre, Math.max(1, Math.min(page, 500)));
+                                          @RequestParam(defaultValue = "1") int page,
+                                          @RequestParam(defaultValue = "movie") String type,
+                                          @RequestParam(defaultValue = "popular") String category) {
+        return movieService.getMovies(search, genre, Math.max(1, Math.min(page, 500)), type, category);
     }
 
     @GetMapping("/genres")
-    public List<String> getGenres() {
-        return movieService.getAllGenres();
+    public List<String> getGenres(@RequestParam(defaultValue = "movie") String type) {
+        return movieService.getAllGenres(type);
     }
 }

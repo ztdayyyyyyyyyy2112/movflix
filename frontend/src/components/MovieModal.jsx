@@ -30,7 +30,7 @@ const MovieModal = ({ movie, onClose, isIntro, onLoginClick }) => {
             <button className="modal-play-btn" disabled={!isIntro && !movie.streamUrl} onClick={isIntro ? onLoginClick : () => setIsPlaying(true)}>
               {isIntro ? 'Đăng nhập để xem' : '▶ Phát'}
             </button>
-            {!isIntro && !movie.streamUrl && <p className="stream-unavailable" role="status">Chưa có luồng HLS được cấp phép cho phim này.</p>}
+            {!isIntro && !movie.streamUrl && <p className="stream-unavailable" role="status">TMDB chỉ cung cấp thông tin phim, không lưu trữ video. Chưa có URL HLS bạn sở hữu hoặc được cấp phép cho nội dung này.</p>}
           </div>
         </div>
       </div>

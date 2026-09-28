@@ -29,12 +29,19 @@ function App() {
     try { return JSON.parse(localStorage.getItem('savedMovieIds') || '[]'); }
     catch { return []; }
   });
+  const pageConfig = {
+    home: { type: 'movie', category: 'trending' },
+    tv: { type: 'tv', category: 'popular' },
+    movies: { type: 'movie', category: 'now_playing' },
+    new: { type: 'movie', category: 'trending' },
+  };
+  const currentCatalog = pageConfig[activePage] || pageConfig.home;
 
   useEffect(() => {
-    axios.get(`${MOVIES_API}/genres`)
+    axios.get(`${MOVIES_API}/genres`, { params: { type: currentCatalog.type } })
       .then(response => setGenres(response.data))
       .catch(() => setGenres([]));
-  }, []);
+  }, [currentCatalog.type]);
 
   useEffect(() => {
     let active = true;
@@ -42,6 +49,8 @@ function App() {
     if (searchTerm) params.search = searchTerm;
     if (selectedGenre) params.genre = selectedGenre;
     params.page = page;
+    params.type = currentCatalog.type;
+    params.category = currentCatalog.category;
 
     setLoading(page === 1);
     setLoadingMore(page > 1);
@@ -74,7 +83,7 @@ function App() {
       });
 
     return () => { active = false; };
-  }, [searchTerm, selectedGenre, page]);
+  }, [searchTerm, selectedGenre, page, currentCatalog.type, currentCatalog.category]);
 
   const handleSearch = (term) => { setPage(1); setSearchTerm(term); };
   const handleGenreFilter = (genre) => { setPage(1); setSelectedGenre(genre); };
@@ -126,7 +135,7 @@ function App() {
                 <p className="catalog-empty-kicker">MOVIEFLIX CATALOG</p>
                 <h1>{catalogMessage ? 'Catalog chưa sẵn sàng' : 'Chưa tìm thấy phim'}</h1>
                 <p>{catalogMessage || 'Thử chọn thể loại khác hoặc xóa bộ lọc để khám phá thêm phim.'}</p>
-                {catalogMessage.includes('TMDB_API_KEY') && <p className="catalog-empty-help">Thêm khóa TMDB vào <code>backend/.env</code>, sau đó khởi động lại backend.</p>}
+                {(catalogMessage.includes('TMDB_API_KEY') || catalogMessage.includes('API key')) && <p className="catalog-empty-help">Kiểm tra API Key v3 trong <code>backend/.env</code>, sau đó khởi động lại backend.</p>}
               </section>
             )}
           </>

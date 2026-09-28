@@ -28,7 +28,8 @@ public class MovieService {
     private final RestTemplate restTemplate;
     private final String apiKey;
     private final MovieCatalogProperties catalogProperties;
-    private Map<Long, String> cachedGenreNames;
+    private Map<Long, String> cachedMovieGenreNames;
+    private Map<Long, String> cachedTvGenreNames;
 
     public MovieService(RestTemplateBuilder restTemplateBuilder,
                         @Value("${tmdb.api-key:}") String apiKey,
@@ -41,16 +42,17 @@ public class MovieService {
         this.catalogProperties = catalogProperties;
     }
 
-    public MovieCatalogResponse getMovies(String search, String genre, int page) {
+    public MovieCatalogResponse getMovies(String search, String genre, int page, String type, String category) {
         if (apiKey.isBlank()) {
             logger.warn("TMDB_API_KEY is not configured; returning an empty movie catalog");
             return new MovieCatalogResponse(List.of(), page, 0, 0,
                     "TMDB_API_KEY chưa được cấu hình trong backend/.env.");
         }
 
+        String mediaType = "tv".equalsIgnoreCase(type) ? "tv" : "movie";
         try {
-            Map<Long, String> genreNames = fetchGenreNames();
-            JsonNode response = restTemplate.getForObject(buildMovieUrl(search, genre, page, genreNames), JsonNode.class);
+            Map<Long, String> genreNames = fetchGenreNames(mediaType);
+            JsonNode response = restTemplate.getForObject(buildMovieUrl(search, genre, page, genreNames, mediaType, category), JsonNode.class);
             if (response == null || !response.path("results").isArray()) {
                 return new MovieCatalogResponse(List.of(), page, 0, 0, "TMDB chưa trả về dữ liệu phim.");
             }
@@ -65,7 +67,7 @@ public class MovieService {
                 long id = result.path("id").asLong();
                 movies.add(new Movie(
                     id,
-                    result.path("title").asText("Untitled"),
+                    result.path("title").asText(result.path("name").asText("Untitled")),
                     imageUrl(result.path("poster_path").asText(null), "w500"),
                     imageUrl(result.path("backdrop_path").asText(null), "w1280"),
                     result.path("overview").asText(""),
@@ -91,19 +93,43 @@ public class MovieService {
         }
     }
 
-    public List<String> getAllGenres() {
+    public List<String> getAllGenres(String type) {
         if (apiKey.isBlank()) return List.of();
         try {
-            return fetchGenreNames().values().stream().distinct().sorted().collect(Collectors.toList());
+            String mediaType = "tv".equalsIgnoreCase(type) ? "tv" : "movie";
+            return fetchGenreNames(mediaType).values().stream().distinct().sorted().collect(Collectors.toList());
         } catch (RestClientException | IllegalArgumentException exception) {
             logger.warn("TMDB genre request failed ({})", exception.getClass().getSimpleName());
             return List.of();
         }
     }
 
-    private String buildMovieUrl(String search, String genre, int page, Map<Long, String> genreNames) {
+    private String buildMovieUrl(String search, String genre, int page, Map<Long, String> genreNames,
+                                 String mediaType, String category) {
         boolean hasSearch = search != null && !search.isBlank();
-        String path = hasSearch ? "/search/movie" : "/discover/movie";
+        String safeCategory = category == null ? "popular" : category.toLowerCase();
+        String path;
+        if (hasSearch) {
+            path = "/search/" + mediaType;
+        } else if (genre != null && !genre.isBlank()) {
+            path = "/discover/" + mediaType;
+        } else if ("trending".equals(safeCategory)) {
+            path = "/trending/" + mediaType + "/week";
+        } else if ("tv".equals(mediaType)) {
+            path = switch (safeCategory) {
+                case "airing_today" -> "/tv/airing_today";
+                case "top_rated" -> "/tv/top_rated";
+                case "on_the_air" -> "/tv/on_the_air";
+                default -> "/tv/popular";
+            };
+        } else {
+            path = switch (safeCategory) {
+                case "now_playing" -> "/movie/now_playing";
+                case "top_rated" -> "/movie/top_rated";
+                case "upcoming" -> "/movie/upcoming";
+                default -> "/movie/popular";
+            };
+        }
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(TMDB_API + path)
                 .queryParam("api_key", apiKey)
                 .queryParam("language", "vi-VN")
@@ -111,7 +137,7 @@ public class MovieService {
                 .queryParam("page", page);
         if (hasSearch) {
             builder.queryParam("query", search);
-        } else {
+        } else if (path.startsWith("/discover/")) {
             builder.queryParam("sort_by", "popularity.desc");
             if (genre != null && !genre.isBlank()) {
                 genreNames.entrySet().stream()
@@ -123,9 +149,10 @@ public class MovieService {
         return builder.build().encode().toUriString();
     }
 
-    private synchronized Map<Long, String> fetchGenreNames() {
-        if (cachedGenreNames != null) return cachedGenreNames;
-        String url = UriComponentsBuilder.fromHttpUrl(TMDB_API + "/genre/movie/list")
+    private synchronized Map<Long, String> fetchGenreNames(String mediaType) {
+        Map<Long, String> cached = "tv".equals(mediaType) ? cachedTvGenreNames : cachedMovieGenreNames;
+        if (cached != null) return cached;
+        String url = UriComponentsBuilder.fromHttpUrl(TMDB_API + "/genre/" + mediaType + "/list")
                 .queryParam("api_key", apiKey)
                 .queryParam("language", "vi-VN")
                 .build().encode().toUriString();
@@ -134,8 +161,10 @@ public class MovieService {
         if (response != null && response.path("genres").isArray()) {
             response.path("genres").forEach(item -> names.put(item.path("id").asLong(), item.path("name").asText()));
         }
-        cachedGenreNames = Map.copyOf(names);
-        return cachedGenreNames;
+        Map<Long, String> genreNames = Map.copyOf(names);
+        if ("tv".equals(mediaType)) cachedTvGenreNames = genreNames;
+        else cachedMovieGenreNames = genreNames;
+        return genreNames;
     }
 
     private String imageUrl(String path, String size) {
