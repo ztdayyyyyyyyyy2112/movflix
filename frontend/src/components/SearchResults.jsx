@@ -27,7 +27,9 @@ const SearchResults = ({ title, movies, searchTerm, selectedGenre, onMovieSelect
               }
             }}
           >
-            <img src={movie.poster} alt={movie.title} />
+            {movie.poster || movie.banner
+              ? <img src={movie.poster || movie.banner} alt={movie.title} />
+              : <div className="result-poster-placeholder" aria-label={movie.title}>{movie.title}</div>}
             <div className="result-info">
               <h4>{movie.title}</h4>
               <p>{movie.genres?.join(', ')}</p>

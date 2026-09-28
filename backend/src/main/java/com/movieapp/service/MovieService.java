@@ -1,6 +1,7 @@
 package com.movieapp.service;
 
 import com.movieapp.model.Movie;
+import com.movieapp.model.MovieCatalogResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,20 +40,19 @@ public class MovieService {
         this.catalogProperties = catalogProperties;
     }
 
-    public List<Movie> getAllMovies() {
-        return getMovies(null, null);
-    }
-
-    public List<Movie> getMovies(String search, String genre) {
+    public MovieCatalogResponse getMovies(String search, String genre, int page) {
         if (apiKey.isBlank()) {
             logger.warn("TMDB_API_KEY is not configured; returning an empty movie catalog");
-            return List.of();
+            return new MovieCatalogResponse(List.of(), page, 0, 0,
+                    "TMDB_API_KEY chưa được cấu hình trong backend/.env.");
         }
 
         try {
             Map<Long, String> genreNames = fetchGenreNames();
-            JsonNode response = restTemplate.getForObject(buildMovieUrl(search), JsonNode.class);
-            if (response == null || !response.path("results").isArray()) return List.of();
+            JsonNode response = restTemplate.getForObject(buildMovieUrl(search, page), JsonNode.class);
+            if (response == null || !response.path("results").isArray()) {
+                return new MovieCatalogResponse(List.of(), page, 0, 0, "TMDB chưa trả về dữ liệu phim.");
+            }
 
             List<Movie> movies = new ArrayList<>();
             response.path("results").forEach(result -> {
@@ -74,10 +74,17 @@ public class MovieService {
                     ));
                 }
             });
-            return movies;
+                return new MovieCatalogResponse(
+                    movies,
+                    response.path("page").asInt(page),
+                    response.path("total_pages").asInt(1),
+                    response.path("total_results").asInt(movies.size()),
+                    null
+                );
         } catch (RestClientException | IllegalArgumentException exception) {
             logger.warn("TMDB catalog request failed: {}", exception.getMessage());
-            return List.of();
+                return new MovieCatalogResponse(List.of(), page, 0, 0,
+                    "Không thể tải phim từ TMDB lúc này. Vui lòng thử lại sau.");
         }
     }
 
@@ -91,13 +98,13 @@ public class MovieService {
         }
     }
 
-    private String buildMovieUrl(String search) {
+    private String buildMovieUrl(String search, int page) {
         String path = search == null || search.isBlank() ? "/discover/movie" : "/search/movie";
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(TMDB_API + path)
                 .queryParam("api_key", apiKey)
                 .queryParam("language", "vi-VN")
                 .queryParam("include_adult", false)
-                .queryParam("page", 1);
+                .queryParam("page", page);
         if (path.equals("/discover/movie")) builder.queryParam("sort_by", "popularity.desc");
         else builder.queryParam("query", search);
         return builder.build().encode().toUriString();

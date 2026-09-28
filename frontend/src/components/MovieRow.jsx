@@ -36,7 +36,9 @@ const MovieRow = ({ id, title, movies, onMovieSelect, savedMovieIds = [], onTogg
               tabIndex="0"
               aria-label={`Xem thông tin ${movie.title}`}
             >
-              <img src={movie.banner || movie.poster} alt={movie.title} className="row-poster" loading="lazy" />
+              {movie.poster || movie.banner
+                ? <img src={movie.poster || movie.banner} alt={movie.title} className="row-poster" loading="lazy" />
+                : <div className="poster-placeholder" aria-label={movie.title}>{movie.title}</div>}
               {movie.trailerUrl && <video className="card-preview-video" src={movie.trailerUrl} muted loop playsInline autoPlay={previewMovieId === movie.id} preload="none" />}
               <div className="poster-info">
                 <div className="card-actions">

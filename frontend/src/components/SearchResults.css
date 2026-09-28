@@ -1,10 +1,11 @@
 .search-results { padding: 20px 0; }
 .search-results > h2 { margin: 0; color: #fff; font-size: 25px; }
 .search-results > h2 span { color: #aaa; font-size: 15px; font-weight: 400; }
-.results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 24px 16px; margin-top: 22px; }
+.results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 210px)); gap: 24px 16px; margin-top: 22px; }
 .result-card { transition: transform 0.2s; cursor: pointer; }
 .result-card:hover { transform: scale(1.03); }
-.result-card img { width: 100%; border-radius: 8px; }
+.result-card img, .result-poster-placeholder { display: block; width: 100%; aspect-ratio: 2 / 3; border-radius: 4px; object-fit: cover; background: #242424; }
+.result-poster-placeholder { display: grid; place-items: center; padding: 18px; color: #ddd; background: linear-gradient(145deg, #333, #191919); text-align: center; }
 .result-info { margin-top: 9px; }
 .result-info h4 { display: -webkit-box; overflow: hidden; font-size: 14px; line-height: 1.4; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .result-info p { font-size: 13px; color: var(--text-secondary); }
