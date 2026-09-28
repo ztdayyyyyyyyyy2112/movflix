@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.client.RestTemplate;
@@ -79,8 +80,12 @@ public class MovieService {
                     response.path("total_results").asInt(movies.size()),
                     null
                 );
+        } catch (HttpClientErrorException.Unauthorized exception) {
+            logger.warn("TMDB rejected the configured API key (401 Unauthorized)");
+            return new MovieCatalogResponse(List.of(), page, 0, 0,
+                "TMDB từ chối API key. Hãy cập nhật API Key v3 còn hiệu lực trong backend/.env rồi khởi động lại BE.");
         } catch (RestClientException | IllegalArgumentException exception) {
-            logger.warn("TMDB catalog request failed: {}", exception.getMessage());
+            logger.warn("TMDB catalog request failed ({})", exception.getClass().getSimpleName());
                 return new MovieCatalogResponse(List.of(), page, 0, 0,
                     "Không thể tải phim từ TMDB lúc này. Vui lòng thử lại sau.");
         }
@@ -91,7 +96,7 @@ public class MovieService {
         try {
             return fetchGenreNames().values().stream().distinct().sorted().collect(Collectors.toList());
         } catch (RestClientException | IllegalArgumentException exception) {
-            logger.warn("TMDB genre request failed: {}", exception.getMessage());
+            logger.warn("TMDB genre request failed ({})", exception.getClass().getSimpleName());
             return List.of();
         }
     }
